@@ -141,6 +141,13 @@ module RubyLLM
         Rails.application.config.generators.options.dig(:active_record, :primary_key_type) || :bigint
       end
 
+      # create_table always defaults to bigint, so UUID apps need the matching id
+      # for primary keys and reference columns to agree.
+      def primary_key_options
+        type = reference_type
+        type == :bigint ? '' : ", id: :#{type}"
+      end
+
       def create_migration_class_name(table_name)
         "create_#{table_name}".camelize
       end
